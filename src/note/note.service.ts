@@ -19,7 +19,7 @@ export class NoteService {
   ) {
     const existingUser = await this.userService.getUserByEmail(reqUser.email);
     if (!existingUser) {
-     throw new NotFoundException('User not found');
+      throw new NotFoundException('User not found');
     }
 
     try {
@@ -34,8 +34,16 @@ export class NoteService {
     }
   }
 
-  findAll() {
-    return `This action returns all note`;
+  async findAll(reqUser: { email: string; sub: string }) {
+    try {
+      const notes = await this.noteModel.find({ userId: reqUser.sub });
+      if (notes.length === 0) {
+        throw new NotFoundException('No notes found for this user');
+      }
+      return notes;
+    } catch (error) {
+      throw error;
+    }
   }
 
   findOne(id: number) {

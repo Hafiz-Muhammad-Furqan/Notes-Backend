@@ -19,14 +19,15 @@ export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
   @UseGuards(AuthGuard)
-  @Post("/create")
-  async create(@Body() createNoteDto: CreateNoteDto, @Request() req) {    
+  @Post('/create')
+  async create(@Body() createNoteDto: CreateNoteDto, @Request() req) {
     return await this.noteService.create(createNoteDto, req.user);
   }
 
-  @Get()
-  findAll() {
-    return this.noteService.findAll();
+  @UseGuards(AuthGuard)
+  @Get('/all')
+  findAll(@Request() req) {
+    return this.noteService.findAll(req.user);
   }
 
   @Get(':id')
