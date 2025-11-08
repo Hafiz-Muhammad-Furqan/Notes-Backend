@@ -1,15 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { NoteService } from './note.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('api/notes')
 export class NoteController {
   constructor(private readonly noteService: NoteService) {}
 
-  @Post()
-  create(@Body() createNoteDto: CreateNoteDto) {
-    return this.noteService.create(createNoteDto);
+  @UseGuards(AuthGuard)
+  @Post("/create")
+  async create(@Body() createNoteDto: CreateNoteDto, @Request() req) {    
+    return await this.noteService.create(createNoteDto, req.user);
   }
 
   @Get()

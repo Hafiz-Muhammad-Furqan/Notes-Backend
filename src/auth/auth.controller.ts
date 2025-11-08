@@ -38,7 +38,6 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('profile')
   async getProfile(@Request() req) {
-    console.log('Authenticated user email:', req.user);
     try {
       const user = await this.userService.getUserByEmail(req.user?.email);
       return user;
