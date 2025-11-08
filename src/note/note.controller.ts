@@ -30,16 +30,19 @@ export class NoteController {
     return this.noteService.findAll(req.user);
   }
 
-  @Get(':id')
+  @UseGuards(AuthGuard)
+  @Get('find/:id')
   findOne(@Param('id') id: string) {
-    return this.noteService.findOne(+id);
+    return this.noteService.findOne(id);
   }
 
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
     return this.noteService.update(+id, updateNoteDto);
   }
 
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.noteService.remove(+id);

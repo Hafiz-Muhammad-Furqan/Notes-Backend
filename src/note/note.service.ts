@@ -46,8 +46,16 @@ export class NoteService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} note`;
+  async findOne(id: string) {
+    try {
+      const note = await this.noteModel.findById(id);
+      if (!note) {
+        throw new NotFoundException('No notes found ');
+      }
+      return note;
+    } catch (error) {
+      throw error;
+    }
   }
 
   update(id: number, updateNoteDto: UpdateNoteDto) {
