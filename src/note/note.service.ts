@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { Note } from './schemas/note.schema';
@@ -46,23 +50,67 @@ export class NoteService {
     }
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, sub: string) {
     try {
       const note = await this.noteModel.findById(id);
       if (!note) {
         throw new NotFoundException('No notes found ');
       }
+      if (note.userId.toString() !== sub) {
+        throw new ForbiddenException(
+          'You do not have permission to access this note',
+        );
+      }
+
       return note;
     } catch (error) {
       throw error;
     }
   }
 
-  update(id: number, updateNoteDto: UpdateNoteDto) {
-    return `This action updates a #${id} note`;
+  async update(id: string, updateNoteDto: UpdateNoteDto, sub: string) {
+    try {
+      const note = await this.noteModel.findById(id);
+      if (!note) {
+        throw new NotFoundException('No notes found ');
+      }
+      if (note.userId.toString() !== sub) {
+        throw new ForbiddenException(
+          'You do not have permission to access this note',
+        );
+      }
+      const updatedNote = await this.noteModel.findByIdAndUpdate(
+        id,
+        updateNoteDto,
+        {
+          new: true,
+        },
+      );
+
+      return updatedNote;
+    } catch (error) {
+      throw error;
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} note`;
+  async remove(id: string, sub: string) {
+    try {
+      const note = await this.noteModel.findById(id);
+      if (!note) {
+        throw new NotFoundException('No notes found ');
+      }
+      if (note.userId.toString() !== sub) {
+        throw new ForbiddenException(
+          'You do not have permission to access this note',
+        );
+      }
+      const deletedNote = await this.noteModel.findByIdAndDelete(id);
+      if (!deletedNote) {
+        throw new NotFoundException('No notes found ');
+      }
+      return deletedNote;
+    } catch (error) {
+      throw error;
+    }
   }
 }
